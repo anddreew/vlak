@@ -1,7 +1,7 @@
 package andreew.vlak;
 
 /**
- * Created by opalo on 13.12.2017.
+ * Created by opalo on 13.11.2017.
  */
 
 public final class pseudoVagon {

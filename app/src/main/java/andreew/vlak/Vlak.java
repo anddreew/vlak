@@ -1,31 +1,42 @@
 package andreew.vlak;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.input.InputManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
+
+import static android.content.ContentValues.TAG;
 import static java.lang.Math.sqrt;
 
 /**
  * Created by opalo on 15.11.2017.
  */
 
-public class Vlak extends View{
+public class Vlak extends View implements InputManager.InputDeviceListener {
     Bitmap[] bmp;
 
     private int currentLevel = 0;
@@ -49,40 +60,40 @@ public class Vlak extends View{
 
     private int[][] levels = {
             {
-                    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                    1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
-                    1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
-                    1,0,0,3,3,0,0,0,0,0,0,0,0,0,1,
-                    1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
-                    1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                    1,1,1,1,1,1,1,2,1,1,1,1,1,1,1
+                1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+                1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
+                1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
+                1,0,0,3,3,0,0,0,0,0,0,0,0,0,1,
+                1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
+                1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+                1,1,1,1,1,1,1,2,1,1,1,1,1,1,1
             },
             {
-                    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                    1,3,3,3,0,0,3,0,0,0,3,0,0,0,1,
-                    1,0,3,0,0,0,3,3,0,3,3,0,0,0,1,
-                    1,0,3,0,0,0,3,0,3,0,3,0,0,0,1,
-                    1,0,3,0,5,0,3,0,0,0,3,5,5,5,1,
-                    1,0,3,5,0,5,3,0,0,0,3,0,0,5,1,
-                    1,0,0,5,5,5,3,0,0,0,3,0,5,0,1,
-                    1,0,0,5,0,5,0,0,0,0,0,5,0,0,1,
-                    1,0,0,5,0,5,0,0,0,0,0,5,5,5,1,
-                    1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,
+                1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                1,3,3,3,0,0,3,0,0,0,3,0,0,0,1,
+                1,0,3,0,0,0,3,3,0,3,3,0,0,0,1,
+                1,0,3,0,0,0,3,0,3,0,3,0,0,0,1,
+                1,0,3,0,5,0,3,0,0,0,3,5,5,5,1,
+                1,0,3,5,0,5,3,0,0,0,3,0,0,5,1,
+                1,0,0,5,5,5,3,0,0,0,3,0,5,0,1,
+                1,0,0,5,0,5,0,0,0,0,0,5,0,0,1,
+                1,0,0,5,0,5,0,0,0,0,0,5,5,5,1,
+                1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,
             },
             {
-                    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                    1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
-                    1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
-                    1,0,0,3,3,3,0,0,0,0,0,0,0,0,1,
-                    1,0,1,3,0,3,0,0,0,0,0,0,0,5,1,
-                    1,0,0,3,3,0,1,0,0,0,0,0,0,5,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,5,1,
-                    1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                    1,1,1,1,1,1,1,1,1,1,1,2,1,1,1
+                1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+                1,0,0,3,3,0,1,0,0,0,0,0,0,0,1,
+                1,0,1,3,0,3,0,0,0,0,0,0,0,0,1,
+                1,0,0,3,3,3,0,0,0,0,0,0,0,0,1,
+                1,0,1,3,0,3,0,0,0,0,0,0,0,5,1,
+                1,0,0,3,3,0,1,0,0,0,0,0,0,5,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,5,1,
+                1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+                1,1,1,1,1,1,1,1,1,1,1,2,1,1,1
             }
     };
 
@@ -156,85 +167,85 @@ public class Vlak extends View{
                 //text.setText("ahoj");
 
                 if(!stop)
-                    if(firstTouch) {
-                        if(levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] == 9) {
+                if(firstTouch) {
+                    if(levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] == 9) {
+                        stop=true;
+                        konec.start();
+                        CountDownTimer countDownTimer = new CountDownTimer(2000, 2000) {
+                            public void onTick(long millisUntilFinished) {
+                            }
+                            public void onFinish() {
+                                currentLevel++;
+                                if(currentLevel>2){
+
+                                }
+                                else{
+                                    restart();
+                                }
+                            }
+                        }.start();
+                    }
+                    else{
+                        int kostka = levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y + y) * lx + (vlakovaSouprava.get(0).X + x)];
+                        if (kostka != 1 && kostka != 2 && !jeTuVagon((vlakovaSouprava.get(0).X + x), (vlakovaSouprava.get(0).Y + y))) {
+                            int vagonX = vlakovaSouprava.get(0).X + x;
+                            int vagonY = vlakovaSouprava.get(0).Y + y;
+                            int vagonyRotace = degree;
+
+                            int myPosX;
+                            int myPosY;
+                            int myRotace;
+
+                            for (pseudoVagon psVa : vlakovaSouprava) {
+                                myPosX = psVa.X;
+                                myPosY = psVa.Y;
+                                myRotace = psVa.Rotace;
+
+                                psVa.X = vagonX;
+                                psVa.Y = vagonY;
+                                psVa.Rotace = vagonyRotace;
+
+                                vagonX = myPosX;
+                                vagonY = myPosY;
+                                vagonyRotace = myRotace;
+                            }
+
+                            switch (levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)]) {
+                                case 3:
+                                    vlakovaSouprava.add(new pseudoVagon(vagonX, vagonY, 8, vagonyRotace));
+                                    levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] = 0;
+                                    zvukobjekt.start();
+                                    break;
+
+                                case 5:
+                                    vlakovaSouprava.add(new pseudoVagon(vagonX, vagonY, 6, vagonyRotace));
+                                    levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] = 0;
+                                    zvukobjekt.start();
+                                    break;
+
+                                default:
+                                    zvukcarna.start();
+                                    break;
+                            }
+
+                            if (findAllSebratelneObjeky() == 0) {
+                                levels[getCurrentLevel()][(door.y) * lx + (door.x)] = 9;
+                            }
+
+                        }
+                        else {
+                            vlakovaSouprava.get(0).Typ = 7;
                             stop=true;
-                            konec.start();
-                            CountDownTimer countDownTimer = new CountDownTimer(2000, 2000) {
+                            CountDownTimer countDownTimer = new CountDownTimer(2000, 1000) {
                                 public void onTick(long millisUntilFinished) {
                                 }
                                 public void onFinish() {
-                                    currentLevel++;
-                                    if(currentLevel>2){
-
-                                    }
-                                    else{
-                                        restart();
-                                    }
+                                    restart();
                                 }
                             }.start();
                         }
-                        else{
-                            int kostka = levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y + y) * lx + (vlakovaSouprava.get(0).X + x)];
-                            if (kostka != 1 && kostka != 2 && !jeTuVagon((vlakovaSouprava.get(0).X + x), (vlakovaSouprava.get(0).Y + y))) {
-                                int vagonX = vlakovaSouprava.get(0).X + x;
-                                int vagonY = vlakovaSouprava.get(0).Y + y;
-                                int vagonyRotace = degree;
-
-                                int myPosX;
-                                int myPosY;
-                                int myRotace;
-
-                                for (pseudoVagon psVa : vlakovaSouprava) {
-                                    myPosX = psVa.X;
-                                    myPosY = psVa.Y;
-                                    myRotace = psVa.Rotace;
-
-                                    psVa.X = vagonX;
-                                    psVa.Y = vagonY;
-                                    psVa.Rotace = vagonyRotace;
-
-                                    vagonX = myPosX;
-                                    vagonY = myPosY;
-                                    vagonyRotace = myRotace;
-                                }
-
-                                switch (levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)]) {
-                                    case 3:
-                                        vlakovaSouprava.add(new pseudoVagon(vagonX, vagonY, 8, vagonyRotace));
-                                        levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] = 0;
-                                        zvukobjekt.start();
-                                        break;
-
-                                    case 5:
-                                        vlakovaSouprava.add(new pseudoVagon(vagonX, vagonY, 6, vagonyRotace));
-                                        levels[getCurrentLevel()][(vlakovaSouprava.get(0).Y) * lx + (vlakovaSouprava.get(0).X)] = 0;
-                                        zvukobjekt.start();
-                                        break;
-
-                                    default:
-                                        zvukcarna.start();
-                                        break;
-                                }
-
-                                if (findAllSebratelneObjeky() == 0) {
-                                    levels[getCurrentLevel()][(door.y) * lx + (door.x)] = 9;
-                                }
-
-                            }
-                            else {
-                                vlakovaSouprava.get(0).Typ = 7;
-                                stop=true;
-                                CountDownTimer countDownTimer = new CountDownTimer(2000, 1000) {
-                                    public void onTick(long millisUntilFinished) {
-                                    }
-                                    public void onFinish() {
-                                        restart();
-                                    }
-                                }.start();
-                            }
-                        }
                     }
+                }
             }
             public void onFinish() {
             }
@@ -344,10 +355,10 @@ public class Vlak extends View{
             int i = vagon.Y;
             canvas.drawBitmap(
                     vagon.Rotace>90 ?
-                            (vagon.Rotace>180 ?
-                                    flip(rotateBitmap(bmp[vagon.Typ], vagon.Rotace)) :
-                                    flip(bmp[vagon.Typ])
-                            ) : rotateBitmap(bmp[vagon.Typ],vagon.Rotace), null, new Rect(j*width, i*height,(j+1)*width, (i+1)*height), null);
+                        (vagon.Rotace>180 ?
+                                flip(rotateBitmap(bmp[vagon.Typ], vagon.Rotace)) :
+                                flip(bmp[vagon.Typ])
+                        ) : rotateBitmap(bmp[vagon.Typ],vagon.Rotace), null, new Rect(j*width, i*height,(j+1)*width, (i+1)*height), null);
         }
         invalidate();
     }
@@ -373,4 +384,18 @@ public class Vlak extends View{
         return dst;
     }
 
+    @Override
+    public void onInputDeviceAdded(int i) {
+
+    }
+
+    @Override
+    public void onInputDeviceRemoved(int i) {
+
+    }
+
+    @Override
+    public void onInputDeviceChanged(int i) {
+
+    }
 }
